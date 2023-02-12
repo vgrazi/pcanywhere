@@ -1,0 +1,1 @@
+%JAVA_HOME%\bin\java -cp classes;conf;lib\commons-logging.jar;lib\concurrent.jar;lib\jgroups-all.jar;lib\log4j-1.2.6.jar;properties -DMOUSE_DISABLED=false -DTRANSMIT_DIFFS=false -Xmx512M com.vgrazi.pca.AppLauncher server

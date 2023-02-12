@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+#########################################################################
+$Id: build.xml,v 1.4 2007/10/31 07:50:05 gmalik2 Exp $
+This is an ant build script for the codebase associated with alliance
+#########################################################################
+ -->
+
+  <!--
+  $Id: build.xml,v 1.4 2007/10/31 07:50:05 gmalik2 Exp $
+  -->
+  <project name="VSAnyWhere" basedir="." default="make">
+    <target name="init">
+      <condition property="rootPath" value=".">
+        <not>
+          <available file="VSAnyWhere" type="dir"/>
+        </not>
+      </condition>
+      <condition property="rootPath" value="VSAnyWhere">
+        <available file="VSAnyWhere" type="dir"/>
+      </condition>
+      <condition property="unixos" value="true">
+        <os family="unix"/>
+      </condition>
+        <!-- Project settings -->
+        <property name="distpath.project" value="../dist"/>
+      <property name="javadocPath" value="${rootPath}/javadoc"/>
+        <property name="project.title" value="VSAnyWhere"/>
+        <property name="project.distname" value="VSAnyWhere"/>
+      <property name="VSAnyWhereJar" value="PCAnyWhere.jar"/>
+      <property name="testReportDir" value="${rootPath}/junitlogs"/>
+      <property name="javadocPath" value="${rootPath}/javadoc"/>
+      <property name="testReportHTMLDir" value="${rootPath}/junitlogs/html"/>
+      <property name="junitStyleDir" value="${rootPath}"/>
+      <property name="classes" value="${rootPath}/classes"/>
+      <property name="dist" value="${rootPath}/dist"/>
+      <property name="src" value="${rootPath}/src"/>
+          <property name="config" value="${rootPath}/properties"/>
+      <property name="TestClass" value="Test"/>
+      <property name="Version" value="1.0"/>
+        <property name="BuildTag" value="Not Specified"/>
+        <property name="testReportDir" value="../junitlogs" />
+        <property name="testReportHTMLDir" value="${testReportDir}/html" />
+        <property name="junitStyleDir" value="../" />
+
+       <path id="project.class.path">
+            <pathelement path="${rootPath}/lib/jgroups-all.jar"/>
+            <pathelement path="${rootPath}/lib/concurrent.jar"/>
+            <pathelement path="${rootPath}/lib/common-logging.jar"/>
+            <pathelement path="${rootPath}/lib/log4j.jar"/>
+            <pathelement path="${rootPath}/lib/jcommon.jar"/>
+        </path>
+    </target>
+
+    <!--
+    #########################################################################
+    clean:   Cleans up existing build.
+    #########################################################################
+    -->
+    <target name="clean" depends="init">
+      <delete dir="${classes}"/>
+      <delete dir="${dist}"/>
+      <delete dir="${testReportDir}"/>
+      <delete dir="${testReportHTMLDir}"/>
+    </target>
+
+     <!--
+    #########################################################################
+    Make:  Executes an incremental rebuild
+    #########################################################################
+    -->
+    <target name="make" depends="init">
+      <mkdir dir="${classes}"/>
+      <mkdir dir="${dist}"/>
+      <javac debug="on" destDir="${classes}" classpathref="project.class.path" deprecation="off" encoding="iso-8859-1">
+        <src path="${src}"/>
+      </javac>
+    </target>
+
+    <!--
+    #########################################################################
+    Rebuild:  rebuilds the entire source path, copies resource files,
+    and creates the archive file.
+    #########################################################################
+    -->
+    <target name="rebuild" depends="clean,make"/>
+
+    <!--
+      #########################################################################
+      jar_vs7: Rebuilds and jar vs7 stuff -
+      Excludes admintool classes and test classes
+      #########################################################################
+      -->
+      <target name="jar_VSAnyWhere" depends="rebuild">
+        <delete file="${dist}/${VSAnyWhereJar}"/>
+        <jar jarfile="${dist}/${VSAnyWhereJar}">
+          <fileset dir="${classes}">
+            <include name="**"/>
+            <exclude name="**/**/Test*.class"/>
+          </fileset>
+          <manifest>
+            <section name="VSAnyWhere Library">
+              <attribute name="Specification-Title" value="VSAnyWhere"/>
+              <attribute name="Specification-Version" value="${Version}"/>
+                        <attribute name="Implementation-Version" value="${BuildTag}"/>
+              <attribute name="Specification-Vendor" value="Credit Suisse HOLT"/>
+            </section>
+          </manifest>
+        </jar>
+      </target>
+
+
+
+<!--
+#############################################################################
+    VS7 Javadoc is generated and copied over to the website
+#############################################################################
+-->
+
+  <target name="javadoc_VSAnyWhere" depends="init">
+    <delete dir="${javadocPath}"/>
+    <mkdir dir="${javadocPath}"/>
+    <javadoc sourcepath="${src}" destdir="${javadocPath}" packagenames="com.*" classpathref="project.class.path" author="true" private="true" version="true" maxmemory="256M" doctitle="&lt;h1&gt;HOLT VS7 API &lt;/h1&gt;" bottom="Copyright (c) 2006 - Credit Suisse "/>
+  </target>
+
+</project>
